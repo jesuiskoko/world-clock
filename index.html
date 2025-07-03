@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>東京の現在時刻 - 世界時計</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background: #f5f5f5;
+    }
+    .map-container {
+      position: relative;
+      width: 95vw;
+      height: 90vh;
+      background: #fff;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .world-map {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+    .tokyo-time, .city-time {
+      position: absolute;
+      left: 77.5%; /* 東京の経度に合わせて調整 */
+      top: 41%;    /* 東京の緯度に合わせて調整 */
+      transform: translate(-50%, -50%);
+      background: rgba(0,0,0,0.65);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-family: 'Segoe UI', 'Arial', sans-serif;
+      pointer-events: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      letter-spacing: 0.02em;
+      text-align: center;
+      line-height: 1.4;
+    }
+    .tokyo-time .time, .city-time .time {
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="map-container">
+    <img class="world-map" src="https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg" alt="World Map">
+    <div class="city-time" id="new-york">ニューヨーク<br><span class="time">--:--:--</span></div>
+    <div class="city-time" id="chicago">シカゴ<br><span class="time">--:--:--</span></div>
+    <div class="city-time" id="los-angeles">ロサンゼルス<br><span class="time">--:--:--</span></div>
+    <div class="city-time" id="london">ロンドン<br><span class="time">--:--:--</span></div>
+    <div class="city-time" id="paris">パリ<br><span class="time">--:--:--</span></div>
+    <div class="city-time" id="beijing">北京<br><span class="time">--:--:--</span></div>
+    <div class="city-time" id="singapore">シンガポール<br><span class="time">--:--:--</span></div>
+    <div class="city-time" id="dubai">ドバイ<br><span class="time">--:--:--</span></div>
+    <div class="city-time" id="sydney">シドニー<br><span class="time">--:--:--</span></div>
+    <div class="city-time" id="buenos-aires">ブエノスアイレス<br><span class="time">--:--:--</span></div>
+    <div class="city-time" id="johannesburg">ヨハネスブルグ<br><span class="time">--:--:--</span></div>
+    <div class="tokyo-time" id="tokyo-time">東京<br><span class="time">--:--:--</span></div>
+  </div>
+  <script>
+    // 都市の設定
+    const cities = [
+      { id: 'tokyo-time', name: '東京', timezone: 'Asia/Tokyo' },
+      { id: 'new-york', name: 'ニューヨーク', timezone: 'America/New_York' },
+      { id: 'chicago', name: 'シカゴ', timezone: 'America/Chicago' },
+      { id: 'los-angeles', name: 'ロサンゼルス', timezone: 'America/Los_Angeles' },
+      { id: 'london', name: 'ロンドン', timezone: 'Europe/London' },
+      { id: 'paris', name: 'パリ', timezone: 'Europe/Paris' },
+      { id: 'beijing', name: '北京', timezone: 'Asia/Shanghai' },
+      { id: 'singapore', name: 'シンガポール', timezone: 'Asia/Singapore' },
+      { id: 'dubai', name: 'ドバイ', timezone: 'Asia/Dubai' },
+      { id: 'sydney', name: 'シドニー', timezone: 'Australia/Sydney' },
+      { id: 'buenos-aires', name: 'ブエノスアイレス', timezone: 'America/Argentina/Buenos_Aires' },
+      { id: 'johannesburg', name: 'ヨハネスブルグ', timezone: 'Africa/Johannesburg' }
+    ];
+
+    // 各都市の位置を設定
+    const positions = {
+      'tokyo-time': { left: '77.5%', top: '41%' },    // 東京
+      'new-york': { left: '25%', top: '40%' },       // ニューヨーク
+      'chicago': { left: '22%', top: '42%' },        // シカゴ
+      'los-angeles': { left: '15%', top: '45%' },    // ロサンゼルス
+      'london': { left: '47%', top: '30%' },         // ロンドン
+      'paris': { left: '50%', top: '35%' },          // パリ
+      'beijing': { left: '72%', top: '40%' },        // 北京
+      'singapore': { left: '76%', top: '52%' },      // シンガポール
+      'dubai': { left: '58%', top: '48%' },          // ドバイ
+      'sydney': { left: '86%', top: '65%' },         // シドニー
+      'buenos-aires': { left: '32%', top: '65%' },   // ブエノスアイレス
+      'johannesburg': { left: '53%', top: '62%' }    // ヨハネスブルグ
+    };
+
+    // 時刻を更新する関数
+    function updateAllClocks() {
+      const now = new Date();
+      
+      cities.forEach(city => {
+        const element = document.getElementById(city.id);
+        if (!element) return;
+        
+        try {
+          const timeString = now.toLocaleTimeString('ja-JP', { 
+            timeZone: city.timezone,
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+          });
+          
+          element.innerHTML = `${city.name}<br><span class="time">${timeString}</span>`;
+          
+          // 位置を設定
+          const pos = positions[city.id];
+          if (pos) {
+            element.style.left = pos.left;
+            element.style.top = pos.top;
+          }
+        } catch (e) {
+          console.error(`Error updating time for ${city.name}:`, e);
+        }
+      });
+    }
+
+    // 初期化
+    updateAllClocks();
+    setInterval(updateAllClocks, 1000);
+  </script>
+</body>
+</html>
