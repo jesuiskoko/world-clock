@@ -6,6 +6,55 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;600&display=swap" rel="stylesheet">
   <title>東京の現在時刻 - 世界時計</title>
   <style>
+    /* Title Positioned on Map */
+    .header-title {
+      position: absolute;
+      left: 50%;
+      top: 80%;  /* Moved up slightly from the bottom */
+      transform: translateX(-50%);
+      z-index: 1000;
+      width: 100%;
+      text-align: center;
+    }
+
+    .site-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px 20px 10px 24px;
+      border-radius: 30px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      white-space: nowrap;
+      margin: 0 auto;
+    }
+    
+    .search-icon-container {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 8px;
+      flex-shrink: 0;
+    }
+    
+    .search-icon {
+      width: 18px;
+      height: 18px;
+      color: white;
+    }
+
+
+
+    /* Existing styles */
     body {
       display: flex;
       justify-content: center;
@@ -56,11 +105,18 @@
       font-size: 1.25em;
       font-weight: 600;
       letter-spacing: 0.05em;
-      color: #fff;
       margin-top: 2px;
       display: block;
       font-family: 'Roboto Mono', 'Courier New', monospace; /* 等幅フォントに変更 */
       width: 100%;
+      text-align: center;
+    }
+    .tokyo-time .date, .city-time .date {
+      font-size: 0.7em;
+      opacity: 0.9;
+      display: block;
+      margin-top: 2px;
+      font-family: 'Roboto Mono', 'Courier New', monospace;
       text-align: center;
     }
     .tokyo-time .city-name, .city-time .city-name {
@@ -73,20 +129,33 @@
   </style>
 </head>
 <body>
+  <!-- Title Header -->
+  <div class="header-title">
+    <div class="site-title">
+      <span>Cities at a Glance</span>
+      <div class="search-icon-container">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </div>
+    </div>
+  </div>
+
   <div class="map-container">
     <img class="world-map" src="https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg" alt="World Map">
-    <div class="city-time" id="new-york"><span class="city-name">New York</span><span class="time">--:--:--</span></div>
-    <div class="city-time" id="chicago"><span class="city-name">Chicago</span><span class="time">--:--:--</span></div>
-    <div class="city-time" id="los-angeles"><span class="city-name">Los Angeles</span><span class="time">--:--:--</span></div>
-    <div class="city-time" id="london"><span class="city-name">London</span><span class="time">--:--:--</span></div>
-    <div class="city-time" id="paris"><span class="city-name">Paris</span><span class="time">--:--:--</span></div>
-    <div class="city-time" id="beijing"><span class="city-name">Beijing</span><span class="time">--:--:--</span></div>
-    <div class="city-time" id="singapore"><span class="city-name">Singapore</span><span class="time">--:--:--</span></div>
-    <div class="city-time" id="dubai"><span class="city-name">Dubai</span><span class="time">--:--:--</span></div>
-    <div class="city-time" id="sydney"><span class="city-name">Sydney</span><span class="time">--:--:--</span></div>
-    <div class="city-time" id="buenos-aires"><span class="city-name">Buenos Aires</span><span class="time">--:--:--</span></div>
-    <div class="city-time" id="johannesburg"><span class="city-name">Johannesburg</span><span class="time">--:--:--</span></div>
-    <div class="tokyo-time" id="tokyo-time"><span class="city-name">Tokyo</span><span class="time">--:--:--</span></div>
+    <div class="city-time" id="new-york"><span class="city-name">New York</span><span class="time">--:--:--</span><span class="date">----/--/--</span></div>
+    <div class="city-time" id="chicago"><span class="city-name">Chicago</span><span class="time">--:--:--</span><span class="date">----/--/--</span></div>
+    <div class="city-time" id="los-angeles"><span class="city-name">Los Angeles</span><span class="time">--:--:--</span><span class="date">----/--/--</span></div>
+    <div class="city-time" id="london"><span class="city-name">London</span><span class="time">--:--:--</span><span class="date">----/--/--</span></div>
+    <div class="city-time" id="paris"><span class="city-name">Paris</span><span class="time">--:--:--</span><span class="date">----/--/--</span></div>
+    <div class="city-time" id="beijing"><span class="city-name">Beijing</span><span class="time">--:--:--</span><span class="date">----/--/--</span></div>
+    <div class="city-time" id="singapore"><span class="city-name">Singapore</span><span class="time">--:--:--</span><span class="date">----/--/--</span></div>
+    <div class="city-time" id="dubai"><span class="city-name">Dubai</span><span class="time">--:--:--</span><span class="date">----/--/--</span></div>
+    <div class="city-time" id="sydney"><span class="city-name">Sydney</span><span class="time">--:--:--</span><span class="date">----/--/--</span></div>
+    <div class="city-time" id="buenos-aires"><span class="city-name">Buenos Aires</span><span class="time">--:--:--</span><span class="date">----/--/--</span></div>
+    <div class="city-time" id="johannesburg"><span class="city-name">Johannesburg</span><span class="time">--:--:--</span><span class="date">----/--/--</span></div>
+    <div class="tokyo-time" id="tokyo-time"><span class="city-name">Tokyo</span><span class="time">--:--:--</span><span class="date">----/--/--</span></div>
   </div>
   <script>
     // 都市の設定
@@ -138,7 +207,18 @@
             hour12: false
           });
           
-          element.innerHTML = `<span class="city-name">${city.name}</span><span class="time">${timeString}</span>`;
+          const dateString = now.toLocaleDateString('ja-JP', {
+            timeZone: city.timezone,
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+          }).replace(/(\d+)\/(\d+)\/(\d+)/, '$1/$2/$3');
+          
+          element.innerHTML = `
+            <span class="city-name">${city.name}</span>
+            <span class="time">${timeString}</span>
+            <span class="date">${dateString}</span>
+          `;
           
           // 位置を設定
           const pos = positions[city.id];
