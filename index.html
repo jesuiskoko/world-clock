@@ -10,10 +10,10 @@
     .header-title {
       position: absolute;
       left: 50%;
-      top: 80%;  /* Moved up slightly from the bottom */
+      top: 80%;
       transform: translateX(-50%);
       z-index: 1000;
-      width: 100%;
+      width: auto;
       text-align: center;
     }
 
@@ -129,19 +129,6 @@
   </style>
 </head>
 <body>
-  <!-- Title Header -->
-  <div class="header-title">
-    <div class="site-title">
-      <span>Cities at a Glance</span>
-      <div class="search-icon-container">
-        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-      </div>
-    </div>
-  </div>
-
   <div class="map-container">
     <img class="world-map" src="https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg" alt="World Map">
     <div class="city-time" id="new-york"><span class="city-name">New York</span><span class="time">--:--:--</span><span class="date">----/--/--</span></div>
@@ -157,6 +144,133 @@
     <div class="city-time" id="johannesburg"><span class="city-name">Johannesburg</span><span class="time">--:--:--</span><span class="date">----/--/--</span></div>
     <div class="tokyo-time" id="tokyo-time"><span class="city-name">Tokyo</span><span class="time">--:--:--</span><span class="date">----/--/--</span></div>
   </div>
+
+  <!-- Time Difference Calculator -->
+  <div class="time-difference-calculator">
+    <h3>Cities at a Glance</h3>
+    <div class="city-selectors">
+      <select id="city1">
+        <option value="">Select first city</option>
+      </select>
+      <span class="vs-text">vs</span>
+      <select id="city2">
+        <option value="">Select second city</option>
+      </select>
+    </div>
+    <div id="timeDifferenceResult" class="result">
+      Select two cities to see the time difference
+    </div>
+  </div>
+
+  <style>
+    .time-difference-calculator {
+      position: fixed;
+      bottom: 25px;
+      left: 25px;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 18px 22px;
+      border-radius: 14px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+      z-index: 1000;
+      max-width: 360px;
+      font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      backdrop-filter: blur(8px);
+    }
+
+    .time-difference-calculator h3 {
+      margin: 0 0 16px 0;
+      color: #2c3e50;
+      font-size: 1.1em;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+      position: relative;
+      display: inline-block;
+    }
+
+    .time-difference-calculator h3::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 30px;
+      height: 2px;
+      background: #3498db;
+      border-radius: 2px;
+    }
+
+    .city-selectors {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .city-selectors select {
+      flex: 1;
+      padding: 10px 12px;
+      border: 1px solid #e0e6ed;
+      border-radius: 8px;
+      font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.9em;
+      max-width: 140px;
+      background: #fff;
+      color: #2c3e50;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 10px;
+      padding-right: 30px;
+    }
+
+    .city-selectors select:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    }
+
+    .city-selectors select:hover {
+      border-color: #bdc3c7;
+    }
+
+    .vs-text {
+      font-weight: 600;
+      color: #7f8c8d;
+      font-size: 0.85em;
+      padding: 0 4px;
+      background: #f5f7fa;
+      border-radius: 4px;
+      line-height: 1;
+      padding: 4px 8px;
+    }
+
+    .result {
+      padding: 14px 16px;
+      background: #f8fafc;
+      border-radius: 10px;
+      font-size: 0.92em;
+      line-height: 1.5;
+      min-height: auto;
+      display: block;
+      text-align: left;
+      border: 1px solid #edf2f7;
+      color: #4a5568;
+      transition: all 0.3s ease;
+    }
+
+    .result div {
+      margin: 4px 0;
+    }
+
+    .result strong {
+      color: #2d3748;
+      font-weight: 600;
+    }
+  </style>
+
   <script>
     // 都市の設定
     const cities = [
@@ -178,10 +292,10 @@
     const positions = {
       'tokyo-time': { left: '90%', top: '30%' },    // Tokyo
       'new-york': { left: '32%', top: '33%' },      // New York
-      'chicago': { left: '25%', top: '23%' },       // Chicago
+      'chicago': { left: '25%', top: '20%' },       // Chicago
       'los-angeles': { left: '12%', top: '37%' },   // Los Angeles
       'london': { left: '43%', top: '20%' },        // London
-      'paris': { left: '49%', top: '31%' },         // Paris
+      'paris': { left: '49%', top: '33%' },         // Paris
       'beijing': { left: '78%', top: '33%' },       // Beijing
       'singapore': { left: '78%', top: '55%' },     // Singapore
       'dubai': { left: '62%', top: '40%' },         // Dubai
@@ -235,6 +349,103 @@
     // 初期化
     updateAllClocks();
     setInterval(updateAllClocks, 1000);
+
+    // Initialize city dropdowns
+    const city1Select = document.getElementById('city1');
+    const city2Select = document.getElementById('city2');
+    const resultDiv = document.getElementById('timeDifferenceResult');
+
+    // Populate city dropdowns
+    function populateCityDropdowns() {
+      cities.forEach(city => {
+        if (city.id !== 'tokyo-time') { // Skip Tokyo as it's already in the main display
+          const option1 = document.createElement('option');
+          const option2 = document.createElement('option');
+          option1.value = city.timezone;
+          option1.textContent = city.name;
+          option2.value = city.timezone;
+          option2.textContent = city.name;
+          city1Select.appendChild(option1);
+          city2Select.appendChild(option2.cloneNode(true));
+        }
+      });
+    }
+
+    // Calculate time difference between two timezones
+    function calculateTimeDifference() {
+      const timezone1 = city1Select.value;
+      const timezone2 = city2Select.value;
+      
+      if (!timezone1 || !timezone2) {
+        resultDiv.textContent = 'Please select two cities';
+        return;
+      }
+      
+      if (timezone1 === timezone2) {
+        resultDiv.textContent = 'The selected cities are in the same timezone';
+        return;
+      }
+      
+      const now = new Date();
+      const time1 = now.toLocaleTimeString('en-US', { timeZone: timezone1, hour: 'numeric', minute: 'numeric', hour12: false });
+      const time2 = now.toLocaleTimeString('en-US', { timeZone: timezone2, hour: 'numeric', minute: 'numeric', hour12: false });
+      
+      // Calculate the difference in hours
+      const [h1, m1] = time1.split(':').map(Number);
+      const [h2, m2] = time2.split(':').map(Number);
+      
+      let diffHours = h2 - h1;
+      let diffMinutes = m2 - m1;
+      
+      // Handle minute overflow
+      if (diffMinutes < 0) {
+        diffHours--;
+        diffMinutes += 60;
+      }
+      
+      // Handle hour overflow across days
+      if (diffHours < -12) diffHours += 24;
+      if (diffHours > 12) diffHours -= 24;
+      
+      // Format the difference string
+      const absDiffHours = Math.abs(diffHours);
+      const absDiffMinutes = Math.abs(diffMinutes);
+      
+      let diffString = '';
+      if (absDiffHours > 0) {
+        diffString += `${absDiffHours} hour${absDiffHours !== 1 ? 's' : ''}`;
+      }
+      if (absDiffMinutes > 0) {
+        if (diffString) diffString += ' and ';
+        diffString += `${absDiffMinutes} minute${absDiffMinutes !== 1 ? 's' : ''}`;
+      }
+      
+      // Determine which city is ahead
+      let aheadText = '';
+      if (diffHours > 0 || (diffHours === 0 && diffMinutes > 0)) {
+        aheadText = `${city2Select.options[city2Select.selectedIndex].text} is ${diffString} ahead of ${city1Select.options[city1Select.selectedIndex].text}`;
+      } else if (diffHours < 0 || (diffHours === 0 && diffMinutes < 0)) {
+        aheadText = `${city1Select.options[city1Select.selectedIndex].text} is ${diffString} ahead of ${city2Select.options[city2Select.selectedIndex].text}`;
+      } else {
+        aheadText = 'Both cities are in the same timezone';
+      }
+      
+      resultDiv.innerHTML = `
+        <div>${city1Select.options[city1Select.selectedIndex].text}: <strong>${time1}</strong></div>
+        <div>${city2Select.options[city2Select.selectedIndex].text}: <strong>${time2}</strong></div>
+        <div style="margin-top: 8px;">${aheadText}</div>
+      `;
+    }
+    
+    // Initialize the calculator
+    populateCityDropdowns();
+    
+    // Add event listeners
+    city1Select.addEventListener('change', calculateTimeDifference);
+    city2Select.addEventListener('change', calculateTimeDifference);
+    
+    // Update time difference every minute
+    setInterval(calculateTimeDifference, 60000);
   </script>
 </body>
 </html>
