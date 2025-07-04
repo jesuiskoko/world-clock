@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=0.1, user-scalable=yes">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;600&display=swap" rel="stylesheet">
   <title>東京の現在時刻 - 世界時計</title>
   <style>
@@ -71,6 +71,25 @@
       box-shadow: 0 4px 24px rgba(0,0,0,0.08);
       border-radius: 16px;
       overflow: hidden;
+      margin: 0 auto;
+    }
+
+    /* Mobile-specific styles */
+    @media (max-width: 768px) {
+      body {
+        display: block;
+        min-width: 1200px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 20px;
+        box-sizing: border-box;
+      }
+      
+      .map-container {
+        width: 1160px;
+        min-height: 700px;
+        margin: 0 auto;
+      }
     }
     .world-map {
       width: 100%;
@@ -358,16 +377,14 @@
     // Populate city dropdowns
     function populateCityDropdowns() {
       cities.forEach(city => {
-        if (city.id !== 'tokyo-time') { // Skip Tokyo as it's already in the main display
-          const option1 = document.createElement('option');
-          const option2 = document.createElement('option');
-          option1.value = city.timezone;
-          option1.textContent = city.name;
-          option2.value = city.timezone;
-          option2.textContent = city.name;
-          city1Select.appendChild(option1);
-          city2Select.appendChild(option2.cloneNode(true));
-        }
+        const option1 = document.createElement('option');
+        const option2 = document.createElement('option');
+        option1.value = city.timezone;
+        option1.textContent = city.name;
+        option2.value = city.timezone;
+        option2.textContent = city.name;
+        city1Select.appendChild(option1);
+        city2Select.appendChild(option2.cloneNode(true));
       });
     }
 
@@ -382,30 +399,53 @@
       }
       
       if (timezone1 === timezone2) {
-        resultDiv.textContent = 'The selected cities are in the same timezone';
+        resultDiv.textContent = 'The same city has been selected';
         return;
       }
       
+      // Get current date and time in both timezones
       const now = new Date();
-      const time1 = now.toLocaleTimeString('en-US', { timeZone: timezone1, hour: 'numeric', minute: 'numeric', hour12: false });
-      const time2 = now.toLocaleTimeString('en-US', { timeZone: timezone2, hour: 'numeric', minute: 'numeric', hour12: false });
       
-      // Calculate the difference in hours
-      const [h1, m1] = time1.split(':').map(Number);
-      const [h2, m2] = time2.split(':').map(Number);
+      // Format options for date and time
+      const timeOptions = { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+        timeZone: ''
+      };
       
-      let diffHours = h2 - h1;
-      let diffMinutes = m2 - m1;
+      const dateOptions = {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        timeZone: ''
+      };
       
-      // Handle minute overflow
-      if (diffMinutes < 0) {
-        diffHours--;
-        diffMinutes += 60;
-      }
+      // Get formatted date and time for both timezones
+      timeOptions.timeZone = timezone1;
+      dateOptions.timeZone = timezone1;
+      const time1 = now.toLocaleTimeString('en-US', timeOptions);
+      const date1 = now.toLocaleDateString('en-US', dateOptions);
       
-      // Handle hour overflow across days
-      if (diffHours < -12) diffHours += 24;
-      if (diffHours > 12) diffHours -= 24;
+      timeOptions.timeZone = timezone2;
+      dateOptions.timeZone = timezone2;
+      const time2 = now.toLocaleTimeString('en-US', timeOptions);
+      const date2 = now.toLocaleDateString('en-US', dateOptions);
+      
+      // Calculate the actual time difference in milliseconds
+      const dateStr1 = now.toLocaleString('en-US', { timeZone: timezone1 });
+      const dateStr2 = now.toLocaleString('en-US', { timeZone: timezone2 });
+      
+      const dateObj1 = new Date(dateStr1);
+      const dateObj2 = new Date(dateStr2);
+      
+      // Calculate the difference in milliseconds
+      const diffMs = dateObj2 - dateObj1;
+      
+      // Convert to hours and minutes
+      const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+      const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
       
       // Format the difference string
       const absDiffHours = Math.abs(diffHours);
@@ -413,26 +453,32 @@
       
       let diffString = '';
       if (absDiffHours > 0) {
-        diffString += `${absDiffHours} hour${absDiffHours !== 1 ? 's' : ''}`;
+        diffString += `${absDiffHours} hour${absDiffHours > 1 ? 's' : ''}`;
       }
       if (absDiffMinutes > 0) {
         if (diffString) diffString += ' and ';
-        diffString += `${absDiffMinutes} minute${absDiffMinutes !== 1 ? 's' : ''}`;
+        diffString += `${absDiffMinutes} minute${absDiffMinutes > 1 ? 's' : ''}`;
       }
       
       // Determine which city is ahead
       let aheadText = '';
-      if (diffHours > 0 || (diffHours === 0 && diffMinutes > 0)) {
+      if (diffMs > 0) {
         aheadText = `${city2Select.options[city2Select.selectedIndex].text} is ${diffString} ahead of ${city1Select.options[city1Select.selectedIndex].text}`;
-      } else if (diffHours < 0 || (diffHours === 0 && diffMinutes < 0)) {
+      } else if (diffMs < 0) {
         aheadText = `${city1Select.options[city1Select.selectedIndex].text} is ${diffString} ahead of ${city2Select.options[city2Select.selectedIndex].text}`;
       } else {
-        aheadText = 'Both cities are in the same timezone';
+        aheadText = 'Both cities are in the same time zone';
       }
+      
+      // Add date information if different
+      const dateInfo = (date1 === date2) ? '' : `
+        <div style="font-size: 0.9em; color: #666; margin-top: 4px;">
+          (Dates: ${date1} and ${date2})
+        </div>`;
       
       resultDiv.innerHTML = `
         <div>${city1Select.options[city1Select.selectedIndex].text}: <strong>${time1}</strong></div>
-        <div>${city2Select.options[city2Select.selectedIndex].text}: <strong>${time2}</strong></div>
+        <div>${city2Select.options[city2Select.selectedIndex].text}: <strong>${time2}</strong>${dateInfo}</div>
         <div style="margin-top: 8px;">${aheadText}</div>
       `;
     }
