@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=0.1, user-scalable=yes">
+  <title>world clock</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;600&display=swap" rel="stylesheet">
-  <title>東京の現在時刻 - 世界時計</title>
   <style>
     /* Title Positioned on Map */
     .header-title {
@@ -83,12 +83,30 @@
         -webkit-overflow-scrolling: touch;
         padding: 20px;
         box-sizing: border-box;
+        position: relative;
+        min-height: 100vh;
       }
       
       .map-container {
         width: 1160px;
         min-height: 700px;
         margin: 0 auto;
+        position: relative;
+      }
+      
+      .time-difference-calculator {
+        position: fixed;
+        bottom: 25px;
+        left: 25px;
+        z-index: 1000;
+        width: 320px;
+      }
+      
+      /* Ensure the calculator stays in view when scrolling horizontally */
+      @media (max-width: 1160px) {
+        .time-difference-calculator {
+          left: calc(50% - 580px + 25px);
+        }
       }
     }
     .world-map {
